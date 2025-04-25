@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日文單字小測驗</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ddd;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .next-button {
+            background-color: #008CBA;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>日文單字小測驗</h1>
+    <div class="question-container">
+        <p class="question">準備好了嗎？開始！</p>
+        <div class="input-container">
+            <input type="text" id="answer" placeholder="請輸入平假名">
+        </div>
+        <button id="submit" disabled>送出</button>
+        <div class="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const wordBank = {
+        "清潔": "せいけつ",
+        "花粉症": "かふんしょう",
+        "植物": "しょくぶつ",
+        "鼻水": "はなみず",
+        "北米": "ほくべい",
+        "急増": "きゅうぞう",
+        "背景": "はいけい",
+        "伴う": "ともなう",
+        "体質": "たいしつ",
+        "要因": "よういん",
+        "唱える": "となえる",
+        "学者": "がくしゃ",
+        "免疫": "めんえき",
+        "患う": "わずらう",
+        "比較的な": "ひかくてきな",
+        "爆発的な": "ばくはつてきな",
+        "割": "わり",
+        "首都圏": "しゅとけん",
+        "春先": "はるさき",
+        "大量": "たいりょう",
+        "飛散": "ひさん",
+        "異物": "いぶつ",
+        "侵入": "しんにゅう",
+        "体外": "たいがい",
+        "追い出す": "おいだす",
+        "備わる": "そなわる",
+        "病原体": "びょうげんたい",
+        "入り込む": "はいりこむ",
+        "一種": "いっしゅ",
+        "防衛": "ぼうえい",
+        "細菌": "さいきん",
+        "寄生虫": "きせいちゅう",
+        "闘う": "たたかう",
+        "衛生": "えいせい",
+        "意識": "いしき",
+        "高まる": "たかまる",
+        "殺虫剤": "さっちゅうざい",
+        "空調": "くうちょう",
+        "設備": "せつび",
+        "普及": "ふきゅう",
+        "死滅": "しめつ",
+        "別に": "べつに",
+        "排除": "はいじょ",
+        "駆逐": "くちく",
+        "重ねる": "かさねる",
+        "生み出す": "うみだす",
+        "皮肉な": "ひにくな",
+        "改善": "かいぜん",
+        "長寿": "ちょうじゅ",
+        "誇る": "ほこる",
+        "感染症": "かんせんしょう",
+        "志向": "しこう",
+        "度が過ぎる": "どがすぎる",
+        "抗菌": "こうきん",
+        "繊維": "せんい",
+        "消毒": "しょうどく",
+        "済み": "ずみ",
+        "砂場": "すなば",
+        "薬用": "やくよう",
+        "石けん": "せっけん",
+        "現代": "げんだい",
+        "無菌室": "むきんしつ",
+        "殺菌": "さっきん",
+        "過剰な": "かじょうな",
+        "身の回り": "みのまわり",
+        "発動": "はつどう",
+        "敵": "てき",
+        "症状": "しょうじょう",
+        "保つ": "たもつ",
+        "最中": "さいちゅう",
+        "結局": "けっきょく",
+        "借金": "しゃっきん",
+        "犠牲": "ぎせい",
+        "異例": "いれい",
+        "目撃": "もくげき",
+        "筆者": "ひっしゃ",
+        "歴": "れき",
+        "傾向": "けいこう",
+        "鼻づまり": "はなづまり",
+        "充血": "じゅうけつ",
+        "余命": "よめい",
+        "喫煙": "きつえん",
+        "死亡": "しぼう",
+        "推定": "すいてい"
+    };
+
+    const questionContainer = document.querySelector(".question-container");
+    const feedbackContainer = document.querySelector(".feedback");
+    const submitButton = document.getElementById("submit");
+    const answerInput = document.getElementById("answer");
+
+    let remainingWords = Object.entries(wordBank);
+    let currentWord = null;
+    let attemptCount = 0;
+
+    function getRandomWord() {
+        const randomIndex = Math.floor(Math.random() * remainingWords.length);
+        return { index: randomIndex, kanji: remainingWords[randomIndex][0], hiragana: remainingWords[randomIndex][1] };
+    }
+
+    function updateQuestion() {
+        if (remainingWords.length === 0) {
+            document.querySelector(".question").textContent = "🎉 恭喜你全部答對了！";
+            answerInput.disabled = true;
+            submitButton.disabled = true;
+            feedbackContainer.textContent = "";
+            return;
+        }
+
+        currentWord = getRandomWord();
+        document.querySelector(".question").textContent = `${currentWord.kanji} →`;
+        answerInput.value = '';
+        feedbackContainer.textContent = '';
+        submitButton.disabled = true;
+        attemptCount = 0;
+    }
+
+    function checkAnswer() {
+        const userAnswer = answerInput.value.trim();
+        if (userAnswer === currentWord.hiragana) {
+            feedbackContainer.textContent = "✅ 正確！";
+            feedbackContainer.style.color = "green";
+            remainingWords.splice(currentWord.index, 1);
+            setTimeout(updateQuestion, 800);
+        } else {
+            attemptCount++;
+            if (attemptCount < 3) {
+                feedbackContainer.textContent = `❌ 錯誤，還有 ${3 - attemptCount} 次機會。`;
+                feedbackContainer.style.color = "red";
+            } else {
+                feedbackContainer.textContent = "❌ 錯誤三次，稍後再試這題。";
+                feedbackContainer.style.color = "red";
+                setTimeout(updateQuestion, 1000);
+            }
+        }
+    }
+
+    function updateButtonState() {
+        submitButton.disabled = !answerInput.value.trim();
+    }
+
+    // 綁定輸入事件與變更事件
+    answerInput.addEventListener("input", updateButtonState);
+    answerInput.addEventListener("change", updateButtonState);
+
+    // 綁定 Enter 鍵送出
+    answerInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !submitButton.disabled) {
+            event.preventDefault();
+            checkAnswer();
+        }
+    });
+
+    submitButton.addEventListener("click", checkAnswer);
+
+    updateQuestion();  // 初始載入題目
+    updateButtonState();  // 確保一開始按鈕狀態正確
+</script>
+
+</body>
+</html>
