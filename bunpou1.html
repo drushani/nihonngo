@@ -16,6 +16,7 @@
         }
 
         .container {
+            margin-top: 80px;
             background-color: white;
             padding: 30px;
             border-radius: 10px;
@@ -69,14 +70,58 @@
             background-color: #008CBA;
         }
 
+        .progress-wrapper {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 10px;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #progressText {
+            text-align: right;
+            font-size: 12px;
+            margin: 0;
+            color: #555;
+        }
+
+
     </style>
 </head>
 <body>
 
+<div class="progress-wrapper">
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p id="progressText">0 / 0</p>
+</div>
+    
 <div class="container">
     <h1>日文單字小測驗</h1>
     <div class="question-container">
         <p class="question">準備好了嗎？開始！</p>
+        
         <div class="input-container">
             <input type="text" id="answer" placeholder="請輸入平假名">
         </div>
@@ -173,6 +218,7 @@
         "推定": "すいてい"
     };
 
+
     const questionContainer = document.querySelector(".question-container");
     const feedbackContainer = document.querySelector(".feedback");
     const submitButton = document.getElementById("submit");
@@ -181,6 +227,10 @@
     let remainingWords = Object.entries(wordBank);
     let currentWord = null;
     let attemptCount = 0;
+    let score = 0;
+    let total = remainingWords.length;
+    let wrongList = [];
+    let isRetryMode = false;
 
     function getRandomWord() {
         const randomIndex = Math.floor(Math.random() * remainingWords.length);
@@ -189,10 +239,7 @@
 
     function updateQuestion() {
         if (remainingWords.length === 0) {
-            document.querySelector(".question").textContent = "🎉 恭喜你全部答對了！";
-            answerInput.disabled = true;
-            submitButton.disabled = true;
-            feedbackContainer.textContent = "";
+            showResult();
             return;
         }
 
@@ -202,6 +249,70 @@
         feedbackContainer.textContent = '';
         submitButton.disabled = true;
         attemptCount = 0;
+
+        updateProgressBar();
+    }
+
+    function updateProgressBar() {
+        const currentProgress = total - remainingWords.length;
+        const percent = Math.round((currentProgress / total) * 100);
+        document.getElementById("progressBar").style.width = `${percent}%`;
+        document.getElementById("progressText").textContent = `${currentProgress} / ${total}`;
+    }
+
+
+    function restartAll() {
+        remainingWords = Object.entries(wordBank);
+        score = 0;
+        total = remainingWords.length;
+        wrongList = [];
+        isRetryMode = false;
+        answerInput.disabled = false;
+        submitButton.disabled = true;
+        updateQuestion();
+        updateProgressBar();
+    }
+
+    function showResult() {
+        document.querySelector(".question").innerHTML = `🎉 測驗結束！<br>分數：${score} / ${total}`;
+        answerInput.disabled = true;
+        submitButton.disabled = true;
+
+        let html = "";
+
+        if (wrongList.length > 0) {
+            const wrongWordsHtml = wrongList.map(w => `<li>${w.kanji} → ${w.hiragana}</li>`).join('');
+            html += `
+                <br><strong>錯誤題目：</strong>
+                <ul style="text-align:left">${wrongWordsHtml}</ul>
+                <button id="retry" class="next-button" style="margin-top: 10px;">再挑戰錯題</button>
+            `;
+        } else {
+            html += `<br>🎯 完美無誤！太強啦！`;
+        }
+
+        // ✅ 新增「重新開始」按鈕
+        html += `<br><button id="restart" class="next-button" style="margin-top: 10px; background-color:#f44336;">重新開始</button>`;
+
+        feedbackContainer.innerHTML = html;
+
+        if (document.getElementById("retry")) {
+            document.getElementById("retry").addEventListener("click", retryWrongQuestions);
+        }
+
+        document.getElementById("restart").addEventListener("click", restartAll);
+    }
+
+    function retryWrongQuestions() {
+        remainingWords = wrongList.map(w => [w.kanji, w.hiragana]);
+        wrongList = [];
+        score = 0;
+        total = remainingWords.length;
+        answerInput.disabled = false;
+        submitButton.disabled = true;
+        isRetryMode = true;
+        updateQuestion();
+        updateProgressBar();
     }
 
     function checkAnswer() {
@@ -210,6 +321,7 @@
             feedbackContainer.textContent = "✅ 正確！";
             feedbackContainer.style.color = "green";
             remainingWords.splice(currentWord.index, 1);
+            score++;
             setTimeout(updateQuestion, 800);
         } else {
             attemptCount++;
@@ -217,9 +329,23 @@
                 feedbackContainer.textContent = `❌ 錯誤，還有 ${3 - attemptCount} 次機會。`;
                 feedbackContainer.style.color = "red";
             } else {
-                feedbackContainer.textContent = "❌ 錯誤三次，稍後再試這題。";
+                feedbackContainer.innerHTML = `
+                    ❌ 錯誤三次，正確答案是：<strong>${currentWord.hiragana}</strong><br>
+                    <button id="confirm" style="margin-top:10px;" class="next-button">確認</button>
+                `;
                 feedbackContainer.style.color = "red";
-                setTimeout(updateQuestion, 1000);
+
+                if (!wrongList.some(w => w.kanji === currentWord.kanji)) {
+                    wrongList.push({
+                        kanji: currentWord.kanji,
+                        hiragana: currentWord.hiragana
+                    });
+                }
+
+                document.getElementById("confirm").addEventListener("click", () => {
+                    remainingWords.splice(currentWord.index, 1);
+                    updateQuestion();
+                });
             }
         }
     }
@@ -228,11 +354,9 @@
         submitButton.disabled = !answerInput.value.trim();
     }
 
-    // 綁定輸入事件與變更事件
     answerInput.addEventListener("input", updateButtonState);
     answerInput.addEventListener("change", updateButtonState);
 
-    // 綁定 Enter 鍵送出
     answerInput.addEventListener("keydown", function(event) {
         if (event.key === "Enter" && !submitButton.disabled) {
             event.preventDefault();
@@ -242,8 +366,8 @@
 
     submitButton.addEventListener("click", checkAnswer);
 
-    updateQuestion();  // 初始載入題目
-    updateButtonState();  // 確保一開始按鈕狀態正確
+    updateQuestion();
+    updateButtonState();
 </script>
 
 </body>
