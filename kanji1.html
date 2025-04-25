@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日文單字小測驗</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            margin-top: 80px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ddd;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .next-button {
+            background-color: #008CBA;
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 10px;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #progressText {
+            text-align: right;
+            font-size: 12px;
+            margin: 0;
+            color: #555;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="progress-wrapper">
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p id="progressText">0 / 0</p>
+</div>
+    
+<div class="container">
+    <h1>日文單字小測驗</h1>
+    <div class="question-container">
+        <p class="question">準備好了嗎？開始！</p>
+        
+        <div class="input-container">
+            <input type="text" id="answer" placeholder="請輸入平假名">
+        </div>
+        <button id="submit" disabled>送出</button>
+        <div class="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const wordBank = {
+        "紀伊半島": "きいはんとう",
+        "衣装": "いしょう",
+        "浴衣": "ゆかた",
+        "依存": "いぞん",
+        "委託": "いたく",
+        "胃袋": "いぶくろ",
+        "為替": "かわせ",
+        "影響": "えいきょう",
+        "行為": "こうい",
+        "遺跡": "いせき",
+        "領域": "りょういき",
+        "宇宙": "うちゅう",
+        "羽毛": "うもう",
+        "栄誉": "えいよ",
+        "栄冠": "えいかん",
+        "繁栄": "はんえい",
+        "見栄": "みえ",
+        "見栄え": "みばえ",
+        "新鋭": "しんえい",
+        "自衛隊": "じえいたい",
+        "撮影": "さつえい",
+        "溶液": "ようえき",
+        "辟易": "へきえき",
+        "収益": "しゅうえき",
+        "利益": "りえき",
+        "液体": "えきたい",
+        "液状": "えきじょう",
+        "衰える": "おとろえる",
+        "鈍い": "にぶい",
+        "鈍角": "どんかく",
+        "栄える": "さかえる",
+        "鋭い": "するどい",
+        "易しい": "やさしい",
+        "衣食住": "いしょくじゅう",
+        "依然": "いぜん",
+        "委任": "いにん",
+        "偉業": "いぎょう",
+        "遺産": "いさん",
+        "胃腸": "いちょう",
+        "遺伝": "いでん",
+        "区域": "くいき",
+        "二羽ニワトリ": "にわにわとり",
+        "光栄": "こうえい",
+        "栄養": "えいよう",
+        "交易": "こうえき",
+        "影響力": "えいきょうりょく",
+        "鋭利な": "えいりな",
+        "衛星": "えいせい",
+        "胃液": "いえき",
+        "移動": "いどう",
+        "異議": "いぎ",
+        "以上": "いじょう",
+        "異常": "いじょう",
+        "医師": "いし",
+        "意志": "いし",
+        "周囲": "しゅうい",
+        "衛生": "えいせい",
+        "後遺症": "こういしょう",
+        "好意": "こうい",
+        "更衣室": "こういしつ",
+        "偉大な": "いだいな",
+        "違反": "いはん",
+        "経緯度": "けいいど",
+        "相違点": "そういてん",
+        "違法": "いほう",
+        "偉人": "いじん",
+        "北緯": "ほくい",
+        "南緯": "なんい",
+        "違和感": "いわかん",
+        "衣料品": "いりょうひん",
+        "衣服": "いふく",
+        "衣類": "いるい",
+        "全域": "ぜんいき",
+        "海域": "かいいき",
+        "広域": "こういき",
+        "聖域": "せいいき",
+        "面影": "おもかげ",
+        "人影": "ひとかげ",
+        "影": "かげ",
+        "護衛": "ごえい",
+        "守衛": "しゅえい",
+        "防衛": "ぼうえい",
+        "容易": "ようい",
+        "安易": "あんい",
+        "平易": "へいい",
+        "簡易": "かんい"
+    };
+
+
+    const questionContainer = document.querySelector(".question-container");
+    const feedbackContainer = document.querySelector(".feedback");
+    const submitButton = document.getElementById("submit");
+    const answerInput = document.getElementById("answer");
+
+    let remainingWords = Object.entries(wordBank);
+    let currentWord = null;
+    let attemptCount = 0;
+    let score = 0;
+    let total = remainingWords.length;
+    let wrongList = [];
+    let isRetryMode = false;
+
+    function getRandomWord() {
+        const randomIndex = Math.floor(Math.random() * remainingWords.length);
+        return { index: randomIndex, kanji: remainingWords[randomIndex][0], hiragana: remainingWords[randomIndex][1] };
+    }
+
+    function updateQuestion() {
+        if (remainingWords.length === 0) {
+            showResult();
+            return;
+        }
+
+        currentWord = getRandomWord();
+        document.querySelector(".question").textContent = `${currentWord.kanji} →`;
+        answerInput.value = '';
+        feedbackContainer.textContent = '';
+        submitButton.disabled = true;
+        attemptCount = 0;
+
+        updateProgressBar();
+    }
+
+    function updateProgressBar() {
+        const currentProgress = total - remainingWords.length;
+        const percent = Math.round((currentProgress / total) * 100);
+        document.getElementById("progressBar").style.width = `${percent}%`;
+        document.getElementById("progressText").textContent = `${currentProgress} / ${total}`;
+    }
+
+
+    function restartAll() {
+        remainingWords = Object.entries(wordBank);
+        score = 0;
+        total = remainingWords.length;
+        wrongList = [];
+        isRetryMode = false;
+        answerInput.disabled = false;
+        submitButton.disabled = true;
+        updateQuestion();
+        updateProgressBar();
+    }
+
+    function showResult() {
+        document.querySelector(".question").innerHTML = `🎉 測驗結束！<br>分數：${score} / ${total}`;
+        answerInput.disabled = true;
+        submitButton.disabled = true;
+
+        let html = "";
+
+        if (wrongList.length > 0) {
+            const wrongWordsHtml = wrongList.map(w => `<li>${w.kanji} → ${w.hiragana}</li>`).join('');
+            html += `
+                <br><strong>錯誤題目：</strong>
+                <ul style="text-align:left">${wrongWordsHtml}</ul>
+                <button id="retry" class="next-button" style="margin-top: 10px;">再挑戰錯題</button>
+            `;
+        } else {
+            html += `<br>🎯 完美無誤！太強啦！`;
+        }
+
+        // ✅ 新增「重新開始」按鈕
+        html += `<br><button id="restart" class="next-button" style="margin-top: 10px; background-color:#f44336;">重新開始</button>`;
+
+        feedbackContainer.innerHTML = html;
+
+        if (document.getElementById("retry")) {
+            document.getElementById("retry").addEventListener("click", retryWrongQuestions);
+        }
+
+        document.getElementById("restart").addEventListener("click", restartAll);
+    }
+
+    function retryWrongQuestions() {
+        remainingWords = wrongList.map(w => [w.kanji, w.hiragana]);
+        wrongList = [];
+        score = 0;
+        total = remainingWords.length;
+        answerInput.disabled = false;
+        submitButton.disabled = true;
+        isRetryMode = true;
+        updateQuestion();
+        updateProgressBar();
+    }
+
+    function checkAnswer() {
+        const userAnswer = answerInput.value.trim();
+        if (userAnswer === currentWord.hiragana) {
+            feedbackContainer.textContent = "✅ 正確！";
+            feedbackContainer.style.color = "green";
+            remainingWords.splice(currentWord.index, 1);
+            score++;
+            setTimeout(updateQuestion, 800);
+        } else {
+            attemptCount++;
+            if (attemptCount < 3) {
+                feedbackContainer.textContent = `❌ 錯誤，還有 ${3 - attemptCount} 次機會。`;
+                feedbackContainer.style.color = "red";
+            } else {
+                feedbackContainer.innerHTML = `
+                    ❌ 錯誤三次，正確答案是：<strong>${currentWord.hiragana}</strong><br>
+                    <button id="confirm" style="margin-top:10px;" class="next-button">確認</button>
+                `;
+                feedbackContainer.style.color = "red";
+
+                if (!wrongList.some(w => w.kanji === currentWord.kanji)) {
+                    wrongList.push({
+                        kanji: currentWord.kanji,
+                        hiragana: currentWord.hiragana
+                    });
+                }
+
+                document.getElementById("confirm").addEventListener("click", () => {
+                    remainingWords.splice(currentWord.index, 1);
+                    updateQuestion();
+                });
+            }
+        }
+    }
+
+    function updateButtonState() {
+        submitButton.disabled = !answerInput.value.trim();
+    }
+
+    answerInput.addEventListener("input", updateButtonState);
+    answerInput.addEventListener("change", updateButtonState);
+
+    answerInput.addEventListener("keydown", function(event) {
+        if (event.key === "Enter" && !submitButton.disabled) {
+            event.preventDefault();
+            checkAnswer();
+        }
+    });
+
+    submitButton.addEventListener("click", checkAnswer);
+
+    updateQuestion();
+    updateButtonState();
+</script>
+
+</body>
+</html>
