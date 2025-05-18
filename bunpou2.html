@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日文單字小測驗</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            margin-top: 80px;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .question {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .input-container {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #ddd;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .next-button {
+            background-color: #008CBA;
+        }
+
+        .progress-wrapper {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 10px;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        #progressText {
+            text-align: right;
+            font-size: 12px;
+            margin: 0;
+            color: #555;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<div class="progress-wrapper">
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p id="progressText">0 / 0</p>
+</div>
+    
+<div class="container">
+    <h1>日文單字小測驗</h1>
+    <div class="question-container">
+        <p class="question">準備好了嗎？開始！</p>
+        
+        <div class="input-container">
+            <input type="text" id="answer" placeholder="請輸入平假名">
+        </div>
+        <button id="submit" disabled>送出</button>
+        <div class="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const rawWordBank = {
+        "少子高齢化": ["しょうしこうれいか"],
+        "現状": ["げんじょう"],
+        "国際連合": ["こくさいれんごう"],
+        "総人口": ["そうじんこう"],
+        "産む": ["うむ"],
+        "出生": ["しゅっしょう", "しゅっせい"], // 多個讀音
+        "下回る": ["したまわる"],
+        "急速": ["きゅうそく"],
+        "医学": ["いがく"],
+        "晩婚": ["ばんこん"],
+        "未婚": ["みこん"],
+        "歯止め": ["はどめ"],
+        "生産力": ["せいさんりょく"],
+        "社会保障": ["しゃかいほしょう"],
+        "負担": ["ふたん"],
+        "制度": ["せいど"],
+        "自主性": ["じしゅせい"],
+        "年金": ["ねんきん"],
+        "財政": ["ざいせい"],
+        "貯蓄": ["ちょちく"],
+        "切り崩す": ["きりくずす"],
+        "大多数": ["だいたすう"],
+        "消費": ["しょうひ"],
+        "資本": ["しほん"],
+        "活発化": ["かっぱつか"],
+        "原動力": ["げんどうりょく"],
+        "実施": ["じっし"],
+        "財源": "ざいげん",
+        "介護保険法": "かいごほけんほう",
+        "再配分": "さいはいぶん",
+        "食い止める": "くいとめる",
+        "自治体": "じちたい",
+        "育児": "いくじ",
+        "整備": "せいび",
+        "提供": "ていきょう",
+        "進出": "しんしゅつ",
+        "妨げ": "さまたげ",
+        "一向に": "いっこうに",
+        "気配": "けはい",
+        "構築": "こうちく",
+        "移民": "いみん",
+        "引き受ける": "ひきうける",
+        "柔軟": "じゅうなん",
+        "姿勢": "しせい",
+        "税収入": "ぜいしゅうにゅう",
+        "福祉": "ふくし",
+        "進行": "しんこう",
+        "積極的": "せっきょくてき",
+        "両立": "りょうりつ",
+        "幼児": ["ようじ"],
+        "児童": ["じどう"],
+        "未成年": ["みせいねん"],
+        "少年犯罪": ["しょうねんはんざい"],
+        "若者文化": ["わかものぶんか"],
+        "成人": ["せいじん"],
+        "青年": ["せいねん"],
+        "中高年": ["ちゅうこうねん"],
+        "熟年離婚": ["じゅくねんりこん"],
+        "育児休暇": ["いくじきゅうか"],
+        "核家族": ["かくかぞく"],
+        "老眼": ["ろうがん"],
+        "白髪": ["しらが"]
+    };
+
+    // ✅ 統一處理所有值為陣列格式
+    const wordBank = {};
+    for (const [kanji, value] of Object.entries(rawWordBank)) {
+        wordBank[kanji] = Array.isArray(value) ? value : [value];
+    }
+
+    const questionContainer = document.querySelector(".question-container");
+    const feedbackContainer = document.querySelector(".feedback");
+    const submitButton = document.getElementById("submit");
+    const answerInput = document.getElementById("answer");
+
+    let remainingWords = Object.entries(wordBank);
+    let currentWord = null;
+    let attemptCount = 0;
+    let score = 0;
+    let total = remainingWords.length;
+    let wrongList = [];
+    let isRetryMode = false;
+
+    function getRandomWord() {
+        const randomIndex = Math.floor(Math.random() * remainingWords.length);
+        return {
+            index: randomIndex,
+            kanji: remainingWords[randomIndex][0],
+            hiragana: remainingWords[randomIndex][1] // 這是一個陣列
+        };
+    }
+
+    function updateQuestion() {
+        if (remainingWords.length === 0) {
+            showResult();
+            return;
+        }
+
+        currentWord = getRandomWord();
+        document.querySelector(".question").textContent = `${currentWord.kanji} →`;
+        answerInput.value = '';
+        feedbackContainer.textContent = '';
+        submitButton.disabled = true;
+        attemptCount = 0;
+
+        updateProgressBar();
+    }
+
+    function updateProgressBar() {
+        const currentProgress = total - remainingWords.length;
+        const percent = Math.round((currentProgress / total) * 100);
+        document.getElementById("progressBar").style.width = `${percent}%`;
+        document.getElementById("progressText").textContent = `${currentProgress} / ${total}`;
+    }
+
+    function restartAll() {
+        remainingWords = Object.entries(wordBank);
+        score = 0;
+        total = remainingWords.length;
+        wrongList = [];
+        isRetryMode = false;
+        answerInput.disabled = false;
+        submitButton.disabled = true;
+        updateQuestion();
+        updateProgressBar();
+    }
+
+    function showResult() {
+        document.querySelector(".question").innerHTML = `🎉 測驗結束！<br>分數：${score} / ${total}`;
+        answerInput.disabled = true;
+        submitButton.disabled = true;
+
+        let html = "";
+
+        if (wrongList.length > 0) {
+            const wrongWordsHtml = wrongList.map(w => `<li>${w.kanji} → ${w.hiragana.join(" / ")}</li>`).join('');
+            html += `
+                <br><strong>錯誤題目：</strong>
+                <ul style="text-align:left">${wrongWordsHtml}</ul>
+                <button id="retry" class="next-button" style="margin-top: 10px;">再挑戰錯題</button>
+            `;
+        } else {
+            html += `<br>🎯 完美無誤！太強啦！`;
+        }
+
+        html += `<br><button id="restart" class="next-button" style="margin-top: 10px; background-color:#f44336;">重新開始</button>`;
+
+        feedbackContainer.innerHTML = html;
+
+        if (document.getElementById("retry")) {
+            document.getElementById("retry").addEventListener("click", retryWrongQuestions);
+        }
+
+        document.getElementById("restart").addEventListener("click", restartAll);
+    }
+
+    function retryWrongQuestions() {
+        remainingWords = wrongList.map(w => [w.kanji, w.hiragana]);
+        wrongList = [];
+        score = 0;
+        total = remainingWords.length;
+        answerInput.disabled = false;
+        submitButton.disabled = true;
+        isRetryMode = true;
+        updateQuestion();
+        updateProgressBar();
+    }
+
+    function checkAnswer() {
+        const userAnswer = answerInput.value.trim();
+        if (currentWord.hiragana.includes(userAnswer)) {
+            feedbackContainer.textContent = "✅ 正確！";
+            feedbackContainer.style.color = "green";
+            remainingWords.splice(currentWord.index, 1);
+            score++;
+            setTimeout(updateQuestion, 800);
+        } else {
+            feedbackContainer.innerHTML = `
+                ❌ 錯誤，正確答案是：<strong>${currentWord.hiragana.join(" / ")}</strong><br>
+                <button id="confirm" style="margin-top:10px;" class="next-button">確認</button>
+            `;
+            feedbackContainer.style.color = "red";
+
+            if (!wrongList.some(w => w.kanji === currentWord.kanji)) {
+                wrongList.push({
+                    kanji: currentWord.kanji,
+                    hiragana: currentWord.hiragana
+                });
+            }
+
+            document.getElementById("confirm").addEventListener("click", () => {
+                remainingWords.splice(currentWord.index, 1);
+                updateQuestion();
+            });
+        }
+    }
+
+
+    function updateButtonState() {
+        submitButton.disabled = !answerInput.value.trim();
+    }
+
+    answerInput.addEventListener("input", updateButtonState);
+    answerInput.addEventListener("change", updateButtonState);
+    answerInput.addEventListener("keydown", function (event) {
+        if (event.key === "Enter" && !submitButton.disabled) {
+            event.preventDefault();
+            checkAnswer();
+        }
+    });
+
+    submitButton.addEventListener("click", checkAnswer);
+
+    updateQuestion();
+    updateButtonState();
+</script>
