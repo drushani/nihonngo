@@ -1,205 +1,216 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>日文單字小測驗</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-        }
-
-        .container {
-            margin-top: 80px;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-            width: 90%;
-            max-width: 400px;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .question {
-            font-size: 20px;
-            margin-bottom: 10px;
-        }
-
-        .input-container {
-            margin-bottom: 20px;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            background-color: #ddd;
-        }
-
-        .feedback {
-            text-align: center;
-            font-size: 18px;
-        }
-
-        .next-button {
-            background-color: #008CBA;
-        }
-
-        .progress-wrapper {
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding: 10px 20px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            z-index: 1000;
-            box-sizing: border-box;
-        }
-
-        .progress-container {
-            width: 100%;
-            background-color: #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            height: 10px;
-            margin-bottom: 5px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background-color: #4CAF50;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        #progressText {
-            text-align: right;
-            font-size: 12px;
-            margin: 0;
-            color: #555;
-        }
-
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日文單字小測驗</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+    .container {
+      margin-top: 80px;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .input-container {
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ddd;
+    }
+    .feedback {
+      text-align: center;
+      font-size: 18px;
+    }
+    .next-button {
+      background-color: #008CBA;
+    }
+    .progress-wrapper {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 10px 20px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+    .progress-container {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      height: 10px;
+      margin-bottom: 5px;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #4CAF50;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    #progressText {
+      text-align: right;
+      font-size: 12px;
+      margin: 0;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
-
-<div class="progress-wrapper">
+  <div class="progress-wrapper">
     <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-bar" id="progressBar"></div>
     </div>
     <p id="progressText">0 / 0</p>
-</div>
-    
-<div class="container">
+  </div>
+
+  <div class="container">
     <h1>日文單字小測驗</h1>
     <div class="question-container">
-        <p class="question">準備好了嗎？開始！</p>
-        
-        <div class="input-container">
-            <input type="text" id="answer" placeholder="請輸入平假名">
-        </div>
-        <button id="submit" disabled>送出</button>
-        <div class="feedback"></div>
+      <p class="question">準備好了嗎？開始！</p>
+      <div class="input-container">
+        <input type="text" id="answer" placeholder="請輸入平假名">
+      </div>
+      <button id="submit" disabled>送出</button>
+      <div class="feedback"></div>
     </div>
-</div>
+  </div>
 
-<script>
+  <script>
     const rawWordBank = {
-        "少子高齢化": ["しょうしこうれいか"],
-        "現状": ["げんじょう"],
-        "国際連合": ["こくさいれんごう"],
-        "総人口": ["そうじんこう"],
-        "産む": ["うむ"],
-        "出生": ["しゅっしょう", "しゅっせい"], // 多個讀音
-        "下回る": ["したまわる"],
-        "急速": ["きゅうそく"],
-        "医学": ["いがく"],
-        "晩婚": ["ばんこん"],
-        "未婚": ["みこん"],
-        "歯止め": ["はどめ"],
-        "生産力": ["せいさんりょく"],
-        "社会保障": ["しゃかいほしょう"],
-        "負担": ["ふたん"],
-        "制度": ["せいど"],
-        "自主性": ["じしゅせい"],
-        "年金": ["ねんきん"],
-        "財政": ["ざいせい"],
-        "貯蓄": ["ちょちく"],
-        "切り崩す": ["きりくずす"],
-        "大多数": ["だいたすう"],
-        "消費": ["しょうひ"],
-        "資本": ["しほん"],
-        "活発化": ["かっぱつか"],
-        "原動力": ["げんどうりょく"],
-        "実施": ["じっし"],
-        "財源": "ざいげん",
-        "介護保険法": "かいごほけんほう",
-        "再配分": "さいはいぶん",
-        "食い止める": "くいとめる",
-        "自治体": "じちたい",
-        "育児": "いくじ",
-        "整備": "せいび",
-        "提供": "ていきょう",
-        "進出": "しんしゅつ",
-        "妨げ": "さまたげ",
-        "一向に": "いっこうに",
-        "気配": "けはい",
-        "構築": "こうちく",
-        "移民": "いみん",
-        "引き受ける": "ひきうける",
-        "柔軟": "じゅうなん",
-        "姿勢": "しせい",
-        "税収入": "ぜいしゅうにゅう",
-        "福祉": "ふくし",
-        "進行": "しんこう",
-        "積極的": "せっきょくてき",
-        "両立": "りょうりつ",
-        "幼児": ["ようじ"],
-        "児童": ["じどう"],
-        "未成年": ["みせいねん"],
-        "少年犯罪": ["しょうねんはんざい"],
-        "若者文化": ["わかものぶんか"],
-        "成人": ["せいじん"],
-        "青年": ["せいねん"],
-        "中高年": ["ちゅうこうねん"],
-        "熟年離婚": ["じゅくねんりこん"],
-        "育児休暇": ["いくじきゅうか"],
-        "核家族": ["かくかぞく"],
-        "老眼": ["ろうがん"],
-        "白髪": ["しらが"]
-    };
+        "少子高齢化": { hiragana: ["しょうしこうれいか"], chinese: "少子高齡化" },
+        "現状": { hiragana: ["げんじょう"], chinese: "現狀" },
+        "国際連合": { hiragana: ["こくさいれんごう"], chinese: "國際聯合（聯合國）" },
+        "総人口": { hiragana: ["そうじんこう"], chinese: "總人口" },
+        "産む": { hiragana: ["うむ"], chinese: "生（孩子）" },
+        "出生": { hiragana: ["しゅっしょう", "しゅっせい"], chinese: "出生" },
+        "下回る": { hiragana: ["したまわる"], chinese: "低於" },
+        "急速": { hiragana: ["きゅうそく"], chinese: "急速" },
+        "医学": { hiragana: ["いがく"], chinese: "醫學" },
+        "晩婚": { hiragana: ["ばんこん"], chinese: "晚婚" },
+        "未婚": { hiragana: ["みこん"], chinese: "未婚" },
+        "歯止め": { hiragana: ["はどめ"], chinese: "抑制、制止" },
+        "生産力": { hiragana: ["せいさんりょく"], chinese: "生產力" },
+        "社会保障": { hiragana: ["しゃかいほしょう"], chinese: "社會保障" },
+        "負担": { hiragana: ["ふたん"], chinese: "負擔" },
+        "制度": { hiragana: ["せいど"], chinese: "制度" },
+        "自主性": { hiragana: ["じしゅせい"], chinese: "自主性" },
+        "年金": { hiragana: ["ねんきん"], chinese: "年金" },
+        "財政": { hiragana: ["ざいせい"], chinese: "財政" },
+        "貯蓄": { hiragana: ["ちょちく"], chinese: "儲蓄" },
+        "切り崩す": { hiragana: ["きりくずす"], chinese: "動用（儲蓄）" },
+        "大多数": { hiragana: ["だいたすう"], chinese: "大多數" },
+        "消費": { hiragana: ["しょうひ"], chinese: "消費" },
+        "資本": { hiragana: ["しほん"], chinese: "資本" },
+        "活発化": { hiragana: ["かっぱつか"], chinese: "活化" },
+        "原動力": { hiragana: ["げんどうりょく"], chinese: "原動力" },
+        "実施": { hiragana: ["じっし"], chinese: "實施" },
+        "財源": { hiragana: ["ざいげん"], chinese: "財源" },
+        "介護保険法": { hiragana: ["かいごほけんほう"], chinese: "照護保險法" },
+        "再配分": { hiragana: ["さいはいぶん"], chinese: "再分配" },
+        "食い止める": { hiragana: ["くいとめる"], chinese: "防止、阻止" },
+        "自治体": { hiragana: ["じちたい"], chinese: "地方政府" },
+        "育児": { hiragana: ["いくじ"], chinese: "育兒" },
+        "整備": { hiragana: ["せいび"], chinese: "整備、建設" },
+        "提供": { hiragana: ["ていきょう"], chinese: "提供" },
+        "進出": { hiragana: ["しんしゅつ"], chinese: "進出" },
+        "妨げ": { hiragana: ["さまたげ"], chinese: "阻礙" },
+        "一向に": { hiragana: ["いっこうに"], chinese: "完全（不）" },
+        "気配": { hiragana: ["けはい"], chinese: "跡象" },
+        "構築": { hiragana: ["こうちく"], chinese: "構築" },
+        "移民": { hiragana: ["いみん"], chinese: "移民" },
+        "引き受ける": { hiragana: ["ひきうける"], chinese: "承擔" },
+        "柔軟": { hiragana: ["じゅうなん"], chinese: "柔軟" },
+        "姿勢": { hiragana: ["しせい"], chinese: "態度" },
+        "税収入": { hiragana: ["ぜいしゅうにゅう"], chinese: "稅收" },
+        "福祉": { hiragana: ["ふくし"], chinese: "福利" },
+        "進行": { hiragana: ["しんこう"], chinese: "進行" },
+        "積極的": { hiragana: ["せっきょくてき"], chinese: "積極的" },
+        "両立": { hiragana: ["りょうりつ"], chinese: "兼顧" },
+        "幼児": { hiragana: ["ようじ"], chinese: "幼兒" },
+        "児童": { hiragana: ["じどう"], chinese: "兒童" },
+        "未成年": { hiragana: ["みせいねん"], chinese: "未成年" },
+        "少年犯罪": { hiragana: ["しょうねんはんざい"], chinese: "少年犯罪" },
+        "若者文化": { hiragana: ["わかものぶんか"], chinese: "年輕人文化" },
+        "成人": { hiragana: ["せいじん"], chinese: "成人" },
+        "青年": { hiragana: ["せいねん"], chinese: "青年" },
+        "中高年": { hiragana: ["ちゅうこうねん"], chinese: "中老年" },
+        "熟年離婚": { hiragana: ["じゅくねんりこん"], chinese: "熟齡離婚" },
+        "育児休暇": { hiragana: ["いくじきゅうか"], chinese: "育嬰假" },
+        "核家族": { hiragana: ["かくかぞく"], chinese: "小家庭" },
+        "老眼": { hiragana: ["ろうがん"], chinese: "老花眼" },
+        "白髪": { hiragana: ["しらが"], chinese: "白髮" },
+        "上級": { hiragana: ["じょうきゅう"], chinese: "高級" },
+        "通信教育": { hiragana: ["つうしんきょういく"], chinese: "函授教育" },
+        "幅広い": { hiragana: ["はばひろい"], chinese: "廣泛" },
+        "流暢": { hiragana: ["りゅうちょう"], chinese: "流暢" },
+        "従来": { hiragana: ["じゅうらい"], chinese: "以往" },
+        "成育": { hiragana: ["せいいく"], chinese: "成長與培育" },
+        "増大": { hiragana: ["ぞうだい"], chinese: "增加" },
+        "世代": { hiragana: ["せだい"], chinese: "世代" },
+        "補助線": { hiragana: ["ほじょせん"], chinese: "輔助線" },
+        "導入": { hiragana: ["どうにゅう"], chinese: "導入" },
+        "労力": { hiragana: ["ろうりょく"], chinese: "人力" },
+        "雇用": { hiragana: ["こよう"], chinese: "雇用" },
+        "危機的": { hiragana: ["ききてき"], chinese: "危機的" },
+        "悲観": { hiragana: ["ひかん"], chinese: "悲觀" },
+        "雇う": { hiragana: ["やとう"], chinese: "雇用" },
+        "独立": { hiragana: ["どくりつ"], chinese: "獨立" },
+        "前半": { hiragana: ["ぜんはん"], chinese: "前半段" },
+        "登校": { hiragana: ["とうこう"], chinese: "上學" },
+        "評判": { hiragana: ["ひょうばん"], chinese: "名聲" },
+        "魅力的": { hiragana: ["みりょくてき"], chinese: "有吸引力的" },
+        "秘訣": { hiragana: ["ひけつ"], chinese: "秘訣" },
+        "子育て": { hiragana: ["こそだて"], chinese: "養育孩子" },
+        "別人": { hiragana: ["べつじん"], chinese: "別人" },
+        "老後": { hiragana: ["ろうご"], chinese: "老後" },
+        "前提": { hiragana: ["ぜんてい"], chinese: "前提" },
+        "強める": { hiragana: ["つよめる"], chinese: "加強" }
+        };
 
-    // ✅ 統一處理所有值為陣列格式
     const wordBank = {};
-    for (const [kanji, value] of Object.entries(rawWordBank)) {
-        wordBank[kanji] = Array.isArray(value) ? value : [value];
+    for (const [kanji, data] of Object.entries(rawWordBank)) {
+      wordBank[kanji] = {
+        hiragana: Array.isArray(data.hiragana) ? data.hiragana : [data.hiragana],
+        chinese: data.chinese
+      };
     }
 
     const questionContainer = document.querySelector(".question-container");
@@ -209,142 +220,110 @@
 
     let remainingWords = Object.entries(wordBank);
     let currentWord = null;
-    let attemptCount = 0;
     let score = 0;
     let total = remainingWords.length;
     let wrongList = [];
-    let isRetryMode = false;
 
     function getRandomWord() {
-        const randomIndex = Math.floor(Math.random() * remainingWords.length);
-        return {
-            index: randomIndex,
-            kanji: remainingWords[randomIndex][0],
-            hiragana: remainingWords[randomIndex][1] // 這是一個陣列
-        };
+      const randomIndex = Math.floor(Math.random() * remainingWords.length);
+      return {
+        index: randomIndex,
+        kanji: remainingWords[randomIndex][0],
+        ...remainingWords[randomIndex][1]
+      };
     }
 
     function updateQuestion() {
-        if (remainingWords.length === 0) {
-            showResult();
-            return;
-        }
-
-        currentWord = getRandomWord();
-        document.querySelector(".question").textContent = `${currentWord.kanji} →`;
-        answerInput.value = '';
-        feedbackContainer.textContent = '';
-        submitButton.disabled = true;
-        attemptCount = 0;
-
-        updateProgressBar();
+      if (remainingWords.length === 0) return showResult();
+      currentWord = getRandomWord();
+      document.querySelector(".question").innerHTML = `${currentWord.kanji}（${currentWord.chinese}）->`;
+      answerInput.value = '';
+      feedbackContainer.textContent = '';
+      submitButton.disabled = true;
+      updateProgressBar();
     }
 
     function updateProgressBar() {
-        const currentProgress = total - remainingWords.length;
-        const percent = Math.round((currentProgress / total) * 100);
-        document.getElementById("progressBar").style.width = `${percent}%`;
-        document.getElementById("progressText").textContent = `${currentProgress} / ${total}`;
-    }
-
-    function restartAll() {
-        remainingWords = Object.entries(wordBank);
-        score = 0;
-        total = remainingWords.length;
-        wrongList = [];
-        isRetryMode = false;
-        answerInput.disabled = false;
-        submitButton.disabled = true;
-        updateQuestion();
-        updateProgressBar();
+      const progress = total - remainingWords.length;
+      document.getElementById("progressBar").style.width = `${(progress / total) * 100}%`;
+      document.getElementById("progressText").textContent = `${progress} / ${total}`;
     }
 
     function showResult() {
-        document.querySelector(".question").innerHTML = `🎉 測驗結束！<br>分數：${score} / ${total}`;
-        answerInput.disabled = true;
-        submitButton.disabled = true;
+      document.querySelector(".question").innerHTML = `🎉 測驗結束！<br>分數：${score} / ${total}`;
+      answerInput.disabled = true;
+      submitButton.disabled = true;
 
-        let html = "";
+      let html = "";
+      if (wrongList.length > 0) {
+        const list = wrongList.map(w =>
+          `<li>${w.kanji} → ${w.hiragana.join(" / ")} (${w.chinese})</li>`
+        ).join('');
+        html += `
+          <br><strong>錯誤題目：</strong>
+          <ul style="text-align:left">${list}</ul>
+          <button id="retry" class="next-button" style="margin-top: 10px;">再挑戰錯題</button>
+        `;
+      } else {
+        html += `<br>🎯 完美無誤！太強啦！`;
+      }
 
-        if (wrongList.length > 0) {
-            const wrongWordsHtml = wrongList.map(w => `<li>${w.kanji} → ${w.hiragana.join(" / ")}</li>`).join('');
-            html += `
-                <br><strong>錯誤題目：</strong>
-                <ul style="text-align:left">${wrongWordsHtml}</ul>
-                <button id="retry" class="next-button" style="margin-top: 10px;">再挑戰錯題</button>
-            `;
-        } else {
-            html += `<br>🎯 完美無誤！太強啦！`;
-        }
+      html += `<br><button id="restart" class="next-button" style="margin-top: 10px; background-color:#f44336;">重新開始</button>`;
+      feedbackContainer.innerHTML = html;
 
-        html += `<br><button id="restart" class="next-button" style="margin-top: 10px; background-color:#f44336;">重新開始</button>`;
+      if (document.getElementById("retry")) {
+        document.getElementById("retry").addEventListener("click", () => {
+          remainingWords = wrongList.map(w => [w.kanji, { hiragana: w.hiragana, chinese: w.chinese }]);
+          wrongList = [];
+          score = 0;
+          total = remainingWords.length;
+          answerInput.disabled = false;
+          submitButton.disabled = true;
+          updateQuestion();
+        });
+      }
 
-        feedbackContainer.innerHTML = html;
-
-        if (document.getElementById("retry")) {
-            document.getElementById("retry").addEventListener("click", retryWrongQuestions);
-        }
-
-        document.getElementById("restart").addEventListener("click", restartAll);
-    }
-
-    function retryWrongQuestions() {
-        remainingWords = wrongList.map(w => [w.kanji, w.hiragana]);
-        wrongList = [];
-        score = 0;
-        total = remainingWords.length;
-        answerInput.disabled = false;
-        submitButton.disabled = true;
-        isRetryMode = true;
-        updateQuestion();
-        updateProgressBar();
+      document.getElementById("restart").addEventListener("click", () => location.reload());
     }
 
     function checkAnswer() {
-        const userAnswer = answerInput.value.trim();
-        if (currentWord.hiragana.includes(userAnswer)) {
-            feedbackContainer.textContent = "✅ 正確！";
-            feedbackContainer.style.color = "green";
-            remainingWords.splice(currentWord.index, 1);
-            score++;
-            setTimeout(updateQuestion, 800);
-        } else {
-            feedbackContainer.innerHTML = `
-                ❌ 錯誤，正確答案是：<strong>${currentWord.hiragana.join(" / ")}</strong><br>
-                <button id="confirm" style="margin-top:10px;" class="next-button">確認</button>
-            `;
-            feedbackContainer.style.color = "red";
-
-            if (!wrongList.some(w => w.kanji === currentWord.kanji)) {
-                wrongList.push({
-                    kanji: currentWord.kanji,
-                    hiragana: currentWord.hiragana
-                });
-            }
-
-            document.getElementById("confirm").addEventListener("click", () => {
-                remainingWords.splice(currentWord.index, 1);
-                updateQuestion();
-            });
-        }
+      const userAnswer = answerInput.value.trim();
+      if (currentWord.hiragana.includes(userAnswer)) {
+        feedbackContainer.textContent = "✅ 正確！";
+        feedbackContainer.style.color = "green";
+        remainingWords.splice(currentWord.index, 1);
+        score++;
+        setTimeout(updateQuestion, 800);
+      } else {
+        feedbackContainer.innerHTML = `
+          ❌ 錯誤，正確答案是：<strong>${currentWord.hiragana.join(" / ")}</strong><br>
+          <button id="confirm" style="margin-top:10px;" class="next-button">確認</button>
+        `;
+        feedbackContainer.style.color = "red";
+        wrongList.push(currentWord);
+        document.getElementById("confirm").addEventListener("click", () => {
+          remainingWords.splice(currentWord.index, 1);
+          updateQuestion();
+        });
+      }
     }
 
-
     function updateButtonState() {
-        submitButton.disabled = !answerInput.value.trim();
+      submitButton.disabled = !answerInput.value.trim();
     }
 
     answerInput.addEventListener("input", updateButtonState);
-    answerInput.addEventListener("change", updateButtonState);
     answerInput.addEventListener("keydown", function (event) {
-        if (event.key === "Enter" && !submitButton.disabled) {
-            event.preventDefault();
-            checkAnswer();
-        }
+      if (event.key === "Enter" && !submitButton.disabled) {
+        event.preventDefault();
+        checkAnswer();
+      }
     });
 
     submitButton.addEventListener("click", checkAnswer);
 
     updateQuestion();
     updateButtonState();
-</script>
+  </script>
+</body>
+</html>
