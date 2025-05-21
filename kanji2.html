@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日文單字小測驗</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+    .container {
+      margin-top: 80px;
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 400px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .input-container {
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ddd;
+    }
+    .feedback {
+      text-align: center;
+      font-size: 18px;
+    }
+    .next-button {
+      background-color: #008CBA;
+    }
+    .progress-wrapper {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 10px 20px;
+      background-color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      z-index: 1000;
+      box-sizing: border-box;
+    }
+    .progress-container {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+      height: 10px;
+      margin-bottom: 5px;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #4CAF50;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    #progressText {
+      text-align: right;
+      font-size: 12px;
+      margin: 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress-wrapper">
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p id="progressText">0 / 0</p>
+  </div>
+
+  <div class="container">
+    <h1>日文單字小測驗</h1>
+    <div class="question-container">
+      <p class="question">準備好了嗎？開始！</p>
+      <div class="input-container">
+        <input type="text" id="answer" placeholder="請輸入平假名">
+      </div>
+      <button id="submit" disabled>送出</button>
+      <div class="feedback"></div>
+    </div>
+  </div>
+
+  <script>
+    const rawWordBank = {
+        "超越": { hiragana: ["ちょうえつ"], chinese: "超越" },
+        "越える": { hiragana: ["こえる"], chinese: "越過（具體的東西，例如:柵欄或歲數)" },
+        "声援": { hiragana: ["せいえん"], chinese: "聲援" },
+        "煙い": { hiragana: ["けむい"], chinese: "煙霧瀰漫的" },
+        "煙草": { hiragana: ["たばこ"], chinese: "香煙" },
+        "煙たい": { hiragana: ["けむたい"], chinese: "煙霧瀰漫的" },
+        "桜前線": { hiragana: ["さくらぜんせん"], chinese: "櫻花前線" },
+        "減塩": { hiragana: ["げんえん"], chinese: "減鹽" },
+        "塩分": { hiragana: ["えんぶん"], chinese: "鹽分" },
+        "氷河": { hiragana: ["ひょうが"], chinese: "冰河" },
+        "銀河": { hiragana: ["ぎんが"], chinese: "銀河" },
+        "豪華": { hiragana: ["ごうか"], chinese: "豪華" },
+        "靴擦れ": { hiragana: ["くつずれ"], chinese: "鞋子磨腳" },
+        "我がまま": { hiragana: ["わがまま"], chinese: "任性" },
+        "怪我": { hiragana: ["けが"], chinese: "受傷" },
+        "我慢": { hiragana: ["がまん"], chinese: "忍耐" },
+        "厄介な": { hiragana: ["やっかいな"], chinese: "麻煩的" },
+        "介入": { hiragana: ["かいにゅう"], chinese: "介入" },
+        "仲介": { hiragana: ["ちゅうかい"], chinese: "仲介" },
+        "媒介": { hiragana: ["ばいかい"], chinese: "媒介" },
+        "皆": { hiragana: ["みな"], chinese: "大家" },
+        "旧街道": { hiragana: ["きゅうかいどう"], chinese: "舊街道" },
+        "祝賀": { hiragana: ["しゅくが"], chinese: "祝賀" },
+        "市街": { hiragana: ["しがい"], chinese: "市區" },
+        "互角": { hiragana: ["ごかく"], chinese: "旗鼓相當" },
+        "方角": { hiragana: ["ほうがく"], chinese: "方向" },
+        "河童": { hiragana: ["かっぱ"], chinese: "河童（日本妖怪）" },
+        "河内": { hiragana: ["かわち"], chinese: "河內（地名）" },
+        "河原": { hiragana: ["かわら"], chinese: "河灘" },
+        "年越し": { hiragana: ["としこし"], chinese: "跨年" },
+        "仮に": { hiragana: ["かりに"], chinese: "假如" },
+        "応援": { hiragana: ["おうえん"], chinese: "應援" },
+        "塩辛い": { hiragana: ["しおからい"], chinese: "鹹的" },
+        "運河": { hiragana: ["うんが"], chinese: "運河" },
+        "中華": { hiragana: ["ちゅうか"], chinese: "中華" },
+        "華々しい": { hiragana: ["はなばなしい"], chinese: "華麗的" },
+        "和菓子": { hiragana: ["わがし"], chinese: "和菓子" },
+        "長靴": { hiragana: ["ながぐつ"], chinese: "長靴" },
+        "我が社": { hiragana: ["わがしゃ"], chinese: "我公司" },
+        "我": { hiragana: ["われ"], chinese: "我" },
+        "自我": { hiragana: ["じが"], chinese: "自我" },
+        "介抱": { hiragana: ["かいほう"], chinese: "照顧( 病人或受傷的人)" },
+        "灰皿": { hiragana: ["はいざら"], chinese: "煙灰缸" },
+        "自己紹介": { hiragana: ["じこしょうかい"], chinese: "自我介紹" },
+        "街頭": { hiragana: ["がいとう"], chinese: "街頭" },
+        "三角形": { hiragana: ["さんかくけい"], chinese: "三角形" },
+        "角度": { hiragana: ["かくど"], chinese: "角度" },
+        "角": { hiragana: ["かど", "すみ", "かく"], chinese: "角、角落、角度" },
+        "平仮名": { hiragana: ["ひらがな"], chinese: "平假名" },
+        "片仮名": { hiragana: ["かたかな"], chinese: "片假名" },
+        "送り仮名": { hiragana: ["おくりがな"], chinese: "送假名" },
+        "振り仮名": { hiragana: ["ふりがな"], chinese: "注音假名" },
+        "引っ越し": { hiragana: ["ひっこし"], chinese: "搬家" },
+        "超える": { hiragana: ["こえる"], chinese: "超越，例如:度數或超越某人" },
+        "増加": { hiragana: ["ぞうか"], chinese: "增加" },
+        "可能性": { hiragana: ["かのうせい"], chinese: "可能性" },
+        "家族": { hiragana: ["かぞく"], chinese: "家族" },
+        "変化": { hiragana: ["へんか"], chinese: "變化" },
+        "結果": { hiragana: ["けっか"], chinese: "結果" },
+        "過去": { hiragana: ["かこ"], chinese: "過去" },
+        "物価": { hiragana: ["ぶっか"], chinese: "物價" },
+        "下降": { hiragana: ["かこう"], chinese: "下降" },
+        "快晴": { hiragana: ["かいせい"], chinese: "晴朗" },
+        "会場": { hiragana: ["かいじょう"], chinese: "會場" },
+        "改正": { hiragana: ["かいせい"], chinese: "修正" },
+        "開会": { hiragana: ["かいかい"], chinese: "開會" },
+        "課長": { hiragana: ["かちょう"], chinese: "課長" },
+        "回答": { hiragana: ["かいとう"], chinese: "回答" },
+        "解答": { hiragana: ["かいとう"], chinese: "解答" },
+        "仮想": { hiragana: ["かそう"], chinese: "虛擬" },
+        "仮装": { hiragana: ["かそう"], chinese: "化裝" },
+        "仮説": { hiragana: ["かせつ"], chinese: "假說" },
+        "仮設": { hiragana: ["かせつ"], chinese: "臨時設置" },
+        "仮定": { hiragana: ["かてい"], chinese: "假定" },
+        "家庭": { hiragana: ["かてい"], chinese: "家庭" },
+        "過程": { hiragana: ["かてい"], chinese: "過程" },
+        "課程": { hiragana: ["かてい"], chinese: "課程" },
+        "街角": { hiragana: ["まちかど"], chinese: "街角" },
+        "四角い": { hiragana: ["しかくい"], chinese: "四方形的" },
+        "四つ角": { hiragana: ["よつかど"], chinese: "十字路口" },
+        "飛び越える": { hiragana: ["とびこえる"], chinese: "跳過" },
+        "持ち越える": { hiragana: ["もちこえる"], chinese: "延後" },
+        "勝ち越し": { hiragana: ["かちこし"], chinese: "領先" },
+        "乗り越し": { hiragana: ["のりこし"], chinese: "坐過站" },
+        "見越し": { hiragana: ["みこし"], chinese: "預見" },
+        "乗り越え": { hiragana: ["のりこえ"], chinese: "克服" },
+        "支援": { hiragana: ["しえん"], chinese: "支援" },
+        "救援": { hiragana: ["きゅうえん"], chinese: "救援" },
+        "援助": { hiragana: ["えんじょ"], chinese: "援助" }
+        };
+
+    const wordBank = {};
+    for (const [kanji, data] of Object.entries(rawWordBank)) {
+      wordBank[kanji] = {
+        hiragana: Array.isArray(data.hiragana) ? data.hiragana : [data.hiragana],
+        chinese: data.chinese
+      };
+    }
+
+    const questionContainer = document.querySelector(".question-container");
+    const feedbackContainer = document.querySelector(".feedback");
+    const submitButton = document.getElementById("submit");
+    const answerInput = document.getElementById("answer");
+
+    let remainingWords = Object.entries(wordBank);
+    let currentWord = null;
+    let score = 0;
+    let total = remainingWords.length;
+    let wrongList = [];
+
+    function getRandomWord() {
+      const randomIndex = Math.floor(Math.random() * remainingWords.length);
+      return {
+        index: randomIndex,
+        kanji: remainingWords[randomIndex][0],
+        ...remainingWords[randomIndex][1]
+      };
+    }
+
+    function updateQuestion() {
+      if (remainingWords.length === 0) return showResult();
+      currentWord = getRandomWord();
+      document.querySelector(".question").innerHTML = `${currentWord.kanji}（${currentWord.chinese}）->`;
+      answerInput.value = '';
+      feedbackContainer.textContent = '';
+      submitButton.disabled = true;
+      updateProgressBar();
+    }
+
+    function updateProgressBar() {
+      const progress = total - remainingWords.length;
+      document.getElementById("progressBar").style.width = `${(progress / total) * 100}%`;
+      document.getElementById("progressText").textContent = `${progress} / ${total}`;
+    }
+
+    function showResult() {
+      document.querySelector(".question").innerHTML = `🎉 測驗結束！<br>分數：${score} / ${total}`;
+      answerInput.disabled = true;
+      submitButton.disabled = true;
+
+      let html = "";
+      if (wrongList.length > 0) {
+        const list = wrongList.map(w =>
+          `<li>${w.kanji} → ${w.hiragana.join(" / ")} (${w.chinese})</li>`
+        ).join('');
+        html += `
+          <br><strong>錯誤題目：</strong>
+          <ul style="text-align:left">${list}</ul>
+          <button id="retry" class="next-button" style="margin-top: 10px;">再挑戰錯題</button>
+        `;
+      } else {
+        html += `<br>🎯 完美無誤！太強啦！`;
+      }
+
+      html += `<br><button id="restart" class="next-button" style="margin-top: 10px; background-color:#f44336;">重新開始</button>`;
+      feedbackContainer.innerHTML = html;
+
+      if (document.getElementById("retry")) {
+        document.getElementById("retry").addEventListener("click", () => {
+          remainingWords = wrongList.map(w => [w.kanji, { hiragana: w.hiragana, chinese: w.chinese }]);
+          wrongList = [];
+          score = 0;
+          total = remainingWords.length;
+          answerInput.disabled = false;
+          submitButton.disabled = true;
+          updateQuestion();
+        });
+      }
+
+      document.getElementById("restart").addEventListener("click", () => location.reload());
+    }
+
+    function checkAnswer() {
+      const userAnswer = answerInput.value.trim();
+      if (currentWord.hiragana.includes(userAnswer)) {
+        feedbackContainer.textContent = "✅ 正確！";
+        feedbackContainer.style.color = "green";
+        remainingWords.splice(currentWord.index, 1);
+        score++;
+        setTimeout(updateQuestion, 800);
+      } else {
+        feedbackContainer.innerHTML = `
+          ❌ 錯誤，正確答案是：<strong>${currentWord.hiragana.join(" / ")}</strong><br>
+          <button id="confirm" style="margin-top:10px;" class="next-button">確認</button>
+        `;
+        feedbackContainer.style.color = "red";
+        wrongList.push(currentWord);
+        document.getElementById("confirm").addEventListener("click", () => {
+          remainingWords.splice(currentWord.index, 1);
+          updateQuestion();
+        });
+      }
+    }
+
+    function updateButtonState() {
+      submitButton.disabled = !answerInput.value.trim();
+    }
+
+    answerInput.addEventListener("input", updateButtonState);
+    answerInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter" && !submitButton.disabled) {
+        event.preventDefault();
+        checkAnswer();
+      }
+    });
+
+    submitButton.addEventListener("click", checkAnswer);
+
+    updateQuestion();
+    updateButtonState();
+  </script>
+</body>
+</html>
